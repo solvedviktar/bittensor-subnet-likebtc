@@ -20,8 +20,6 @@
 import typing
 import bittensor as bt
 
-# TODO(developer): Rewrite with your protocol definition.
-
 # This is the protocol for the dummy miner and validator.
 # It is a simple request-response protocol where the validator sends a request
 # to the miner, and the miner responds with a dummy response.
@@ -52,10 +50,15 @@ class Dummy(bt.Synapse):
     """
 
     # Required request input, filled by sending dendrite caller.
-    dummy_input: int
+    input_block_number: int
+    input_payload: str
+    imput_lowest_hash: str
+    input_nonce_left_range_limit: int
+    input_nonce_right_range_limit: int
+    input_zeroes_acceptance: int
 
     # Optional request output, filled by recieving axon.
-    dummy_output: typing.Optional[int] = None
+    output_nonce: typing.Optional[int] = None
 
     def deserialize(self) -> int:
         """
@@ -73,4 +76,4 @@ class Dummy(bt.Synapse):
         >>> dummy_instance.deserialize()
         5
         """
-        return self.dummy_output
+        return self.output_nonce

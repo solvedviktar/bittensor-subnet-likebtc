@@ -18,24 +18,31 @@
 # DEALINGS IN THE SOFTWARE.
 
 import torch
+import hashlib
 from typing import List
 
+import template
+from template.validator.likebtc import add_likebtc_hash
 
-def reward(query: int, response: int) -> float:
-    """
-    Reward the miner response to the dummy request. This method returns a reward
-    value for the miner, which is used to update the miner's score.
 
-    Returns:
-    - float: The reward value for the miner.
-    """
+def acceptance_check(query: template.protocol.Dummy, response: int, winner_hash_dec: int) -> float:
+    ''' Validation of acceptance criteria for miner results.
+        Function returns new winner if his hash is lower.
+    '''
+    hash_data = (str(query.input_block_number) + query.input_payload +
+                 query.imput_lowest_hash + str(response))
+    hash = hashlib.sha256(hash_data.encode()).hexdigest()
 
-    return 1.0 if response == query * 2 else 0
+    if hash.startswith('0' * query.input_zeroes_acceptance) and \
+            (not winner_hash_dec or winner_hash_dec > int(hash, 16)):
+        winner_hash_dec = int(hash, 16)
+
+    return winner_hash_dec
 
 
 def get_rewards(
     self,
-    query: int,
+    query: template.protocol.Dummy,
     responses: List[float],
 ) -> torch.FloatTensor:
     """
@@ -49,6 +56,19 @@ def get_rewards(
     - torch.FloatTensor: A tensor of rewards for the given query and responses.
     """
     # Get all the reward results by iteratively calling your reward() function.
+
+    winner_index = None
+    winner_hash_dec = None
+
+    for _index, response in enumerate(responses):
+        new_winner_hash_dec = acceptance_check(query, response, winner_hash_dec)
+        if winner_hash_dec != new_winner_hash_dec:
+            winner_index = _index
+            winner_hash_dec = new_winner_hash_dec
+
+    if winner_hash_dec:
+        add_likebtc_hash('%064x' % winner_hash_dec)
+
     return torch.FloatTensor(
-        [reward(query, response) for response in responses]
+        [1.0 if _index == winner_index else 0 for _index in range(len(responses))]
     ).to(self.device)

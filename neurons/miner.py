@@ -18,7 +18,9 @@
 # DEALINGS IN THE SOFTWARE.
 
 import time
+import random
 import typing
+import hashlib
 import bittensor as bt
 
 # Bittensor Miner Template:
@@ -40,7 +42,7 @@ class Miner(BaseMinerNeuron):
     def __init__(self, config=None):
         super(Miner, self).__init__(config=config)
 
-        # TODO(developer): Anything specific to your use case you can do here
+        self.forward_time_limit = 10
 
     async def forward(
         self, synapse: template.protocol.Dummy
@@ -58,8 +60,36 @@ class Miner(BaseMinerNeuron):
         The 'forward' function is a placeholder and should be overridden with logic that is appropriate for
         the miner's intended operation. This method demonstrates a basic transformation of input data.
         """
-        # TODO(developer): Replace with actual implementation logic.
-        synapse.dummy_output = synapse.dummy_input * 2
+        _start = time.time()
+        _now = _start
+
+        best_matched_nonce = None
+        best_matched_hash_dec = None
+
+        while _now - _start < self.forward_time_limit:
+            _now = time.time()
+
+            nonce = random.SystemRandom().randint(synapse.input_nonce_left_range_limit,
+                                                  synapse.input_nonce_right_range_limit)
+            hash_data = (str(synapse.input_block_number) + synapse.input_payload +
+                         synapse.imput_lowest_hash + str(nonce))
+            hash = hashlib.sha256(hash_data.encode()).hexdigest()
+
+            if hash.startswith('0' * synapse.input_zeroes_acceptance):
+                matched_nonce = nonce
+                matched_hash_dec = int(hash, 16)
+
+                if not synapse.imput_lowest_hash or matched_hash_dec < int(synapse.imput_lowest_hash, 16):
+                    best_matched_nonce = matched_nonce
+                    break  # Excellent match, do not need to mine more.
+
+                # Trying to find the best result even it's not an excellent match.
+                if not best_matched_hash_dec or best_matched_hash_dec > matched_hash_dec:
+                    best_matched_nonce = matched_nonce
+                    best_matched_hash_dec = matched_hash_dec
+
+        synapse.output_nonce = best_matched_nonce
+
         return synapse
 
     async def blacklist(
