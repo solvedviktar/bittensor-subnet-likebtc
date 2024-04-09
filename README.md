@@ -180,7 +180,22 @@ rewards = tensor([0., 1., 0.])
 miner_uids = tensor([1, 2, 0])
 ```
 
-Miner0 after receiving reward
+Validator wallet
+```
+                                                                     Wallet - validator:5GdsUhAyBPGMx2L7fUARbfxJgQxRTpQx9Fh93G4L3eHoH99g                                                                     
+Subnet: 0                                                                                                                                                                                                    
+COLDKEY    HOTKEY   UID  ACTIVE   STAKE(τ)     RANK    TRUST  CONSENSUS  INCENTIVE  DIVIDENDS  EMISSION(ρ)   VTRUST  VPERMIT  UPDATED  AXON  HOTKEY_SS58                                                     
+validator  default  0      True  494.57109  0.00000  0.00000    0.00000    0.00000    0.00000            0  0.00000               720  none  5D7xWk4UtNgAWSh5BVGAtdhtiQ49okz2mqLxEr4B15R5praE                
+                    1                       0.00000  0.00000    0.00000    0.00000    0.00000           ρ0  0.00000                                                                                          
+Subnet: 1                                                                                                                                                                                                    
+COLDKEY    HOTKEY   UID  ACTIVE    STAKE(τ)     RANK    TRUST  CONSENSUS  INCENTIVE  DIVIDENDS   EMISSION(ρ)   VTRUST  VPERMIT  UPDATED  AXON                HOTKEY_SS58                                     
+validator  default  2      True   494.57109  0.00000  0.00000    0.00000    0.00000    1.00000   410_002_288  0.99998        *       75  37.45.255.187:8091  5D7xWk4UtNgAWSh5BVGAtdhtiQ49okz2mqLxEr4B15R5praE
+2          2        2            τ494.57109  0.00000  0.00000    0.00000    0.00000    1.00000  ρ410_002_288  0.99998                                                                                        
+                                                                                           Wallet balance: τ1e-06                                                                                            
+root@6a5200414671:~# 
+```
+
+Miner0 wallet after receiving reward
 ```
                                                                      Wallet - miner0:5DxsF2xuwtxSUK7D13pWNtUQbmVpzTrUP3uBeWq5cp9uewyK                                                                     
 Subnet: 1                                                                                                                                                                                                 
@@ -191,7 +206,7 @@ miner0   default  0      True   85.76990  0.57948  1.00000    0.57948    0.57948
 root@6a5200414671:~#
 ```
 
-Miner1 after receiving reward
+Miner1 wallet after receiving reward
 ```
                                                                      Wallet - miner1:5DLFkPyMDGM4yrsxtbkoFMXMJ8RMBWvW47S4FoDBuZ48Tn8C                                                                     
 Subnet: 1                                                                                                                                                                                                 
